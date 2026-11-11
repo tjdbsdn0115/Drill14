@@ -26,18 +26,34 @@ def frame_clip(frame, image_height):
     return column * FRAME_WIDTH, image_height - top - height, FRAME_WIDTH, height
 
 
+def reflected_motion(x, direction, distance, left, right):
+    """Reflect all overshoot, even when one update crosses several walls."""
+    span = right - left
+    if span <= 0:
+        return left, direction
+    phase = x - left if direction > 0 else 2 * span - (x - left)
+    phase = (phase + distance) % (2 * span)
+    if phase < span:
+        return left + phase, 1
+    return right - (phase - span), -1
+
+
 class Bird:
-    def __init__(self, image, x, y, direction=1, phase=0.0):
+    def __init__(self, image, x, y, direction=1, phase=0.0,
+                 bounds=(DRAW_WIDTH / 2, 1600 - DRAW_WIDTH / 2)):
         self.image = image
         self.x, self.y = x, y
         self.direction = direction
         self.frame = phase % FRAME_COUNT
+        self.left, self.right = bounds
 
     def update(self, dt=None):
         if dt is None:
             dt = game_framework.frame_time
         self.frame = (self.frame + FRAMES_PER_SECOND * dt) % FRAME_COUNT
-        self.x += self.direction * FLIGHT_SPEED_PPS * dt
+        self.x, self.direction = reflected_motion(
+            self.x, self.direction, FLIGHT_SPEED_PPS * dt, self.left, self.right,
+        )
 
     def draw(self):
         left, bottom, width, height = frame_clip(self.frame, self.image.h)
