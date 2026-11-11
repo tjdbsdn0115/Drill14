@@ -3,8 +3,10 @@ import game_world
 import game_framework
 from boy import Boy
 from grass import Grass
+from bird import create_flock
 
 boy = None
+birds = []
 
 
 def handle_events():
@@ -22,13 +24,16 @@ def handle_events():
 
 
 def init():
-    global boy
+    global boy, birds
 
     boy = Boy()
     game_world.add_oject(boy)
 
     grass = Grass()
     game_world.add_oject(grass, 0)
+    birds = create_flock(get_canvas_width(), boy)
+    for bird in birds:
+        game_world.add_oject(bird, 1)
 
 
 def pause():
@@ -40,9 +45,10 @@ def resume():
 
 
 def finish():
-    global boy
+    global boy, birds
     game_world.clear()
     boy = None
+    birds = []
 
 
 def update():
