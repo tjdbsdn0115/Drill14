@@ -1,6 +1,7 @@
 """The 14 painted poses in bird_animation.png, in reading order."""
 
 from pico2d import load_image
+import game_framework
 
 FRAME_WIDTH = 182
 FRAME_HEIGHT = 170
@@ -9,6 +10,8 @@ FRAME_COUNT = 14  # The bottom-right cell is empty.
 DRAW_WIDTH = 70
 DRAW_SCALE = DRAW_WIDTH / FRAME_WIDTH
 DRAW_HEIGHT = FRAME_HEIGHT * DRAW_SCALE
+WINGBEATS_PER_SECOND = 2.0
+FRAMES_PER_SECOND = FRAME_COUNT * WINGBEATS_PER_SECOND
 
 
 def frame_clip(frame, image_height):
@@ -21,14 +24,16 @@ def frame_clip(frame, image_height):
 
 
 class Bird:
-    def __init__(self, image, x, y, direction=1):
+    def __init__(self, image, x, y, direction=1, phase=0.0):
         self.image = image
         self.x, self.y = x, y
         self.direction = direction
-        self.frame = 0.0
+        self.frame = phase % FRAME_COUNT
 
-    def update(self):
-        pass
+    def update(self, dt=None):
+        if dt is None:
+            dt = game_framework.frame_time
+        self.frame = (self.frame + FRAMES_PER_SECOND * dt) % FRAME_COUNT
 
     def draw(self):
         left, bottom, width, height = frame_clip(self.frame, self.image.h)
