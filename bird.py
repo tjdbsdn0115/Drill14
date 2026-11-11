@@ -15,6 +15,10 @@ FRAMES_PER_SECOND = FRAME_COUNT * WINGBEATS_PER_SECOND
 PIXEL_PER_METER = 10.0 / 0.3  # Same world scale as boy.py.
 FLIGHT_SPEED_KMPH = 30.0
 FLIGHT_SPEED_PPS = FLIGHT_SPEED_KMPH * 1000.0 / 3600.0 * PIXEL_PER_METER
+FLOCK_SIZE = 10
+FLOCK_COLUMNS = 5
+HORIZONTAL_SPACING = 130
+VERTICAL_SPACING = 72
 
 
 def frame_clip(frame, image_height):
@@ -64,3 +68,25 @@ class Bird:
             'h' if self.direction < 0 else '',
             self.x, center_y, DRAW_WIDTH, height * DRAW_SCALE,
         )
+
+
+def create_flock(canvas_width, base_y=200):
+    """Load one texture for ten birds; translated bounds keep their formation."""
+    image = load_image('bird_animation.png')
+    # Fit the formation if the canvas is narrower than the default 1600px.
+    spacing = min(HORIZONTAL_SPACING,
+                  max(0, (canvas_width - DRAW_WIDTH) / (FLOCK_COLUMNS - 1)))
+    half_span = spacing * (FLOCK_COLUMNS - 1) / 2
+    group_left = DRAW_WIDTH / 2 + half_span
+    group_right = canvas_width - DRAW_WIDTH / 2 - half_span
+    start = (group_left + group_right) / 2
+    birds = []
+    for index in range(FLOCK_SIZE):
+        column, row = index % FLOCK_COLUMNS, index // FLOCK_COLUMNS
+        offset = column * spacing - half_span
+        birds.append(Bird(
+            image, start + offset, base_y + row * VERTICAL_SPACING,
+            phase=index * FRAME_COUNT / FLOCK_SIZE,
+            bounds=(group_left + offset, group_right + offset),
+        ))
+    return birds
