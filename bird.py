@@ -12,6 +12,9 @@ DRAW_SCALE = DRAW_WIDTH / FRAME_WIDTH
 DRAW_HEIGHT = FRAME_HEIGHT * DRAW_SCALE
 WINGBEATS_PER_SECOND = 2.0
 FRAMES_PER_SECOND = FRAME_COUNT * WINGBEATS_PER_SECOND
+PIXEL_PER_METER = 10.0 / 0.3  # Same world scale as boy.py.
+FLIGHT_SPEED_KMPH = 30.0
+FLIGHT_SPEED_PPS = FLIGHT_SPEED_KMPH * 1000.0 / 3600.0 * PIXEL_PER_METER
 
 
 def frame_clip(frame, image_height):
@@ -34,6 +37,7 @@ class Bird:
         if dt is None:
             dt = game_framework.frame_time
         self.frame = (self.frame + FRAMES_PER_SECOND * dt) % FRAME_COUNT
+        self.x += self.direction * FLIGHT_SPEED_PPS * dt
 
     def draw(self):
         left, bottom, width, height = frame_clip(self.frame, self.image.h)
