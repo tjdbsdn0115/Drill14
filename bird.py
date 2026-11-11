@@ -1,4 +1,8 @@
-"""The 14 painted poses in bird_animation.png, in reading order."""
+"""Ten time-based birds using the atlas's 14 poses in reading order.
+
+See docs/BIRD_FLIGHT.md for measured atlas boundaries, reflected travel,
+formation offsets, numeric-label clearance, and verification evidence.
+"""
 
 from pico2d import load_image
 import game_framework
@@ -44,6 +48,8 @@ def reflected_motion(x, direction, distance, left, right):
 
 
 class Bird:
+    """A shared-texture bird with independent wing phase and translated patrol."""
+
     def __init__(self, image, x, y, direction=1, phase=0.0,
                  bounds=(DRAW_WIDTH / 2, 1600 - DRAW_WIDTH / 2)):
         self.image = image
@@ -86,6 +92,7 @@ def create_flock(canvas_width, boy, label_top=0):
     for index in range(FLOCK_SIZE):
         column, row = index % FLOCK_COLUMNS, index // FLOCK_COLUMNS
         offset = column * spacing - half_span
+        # Equal patrol lengths and equal relative starts synchronize all turns.
         birds.append(Bird(
             image, start + offset, base_y + row * VERTICAL_SPACING,
             phase=index * FRAME_COUNT / FLOCK_SIZE,
