@@ -31,7 +31,7 @@ def init():
 
     grass = Grass()
     game_world.add_oject(grass, 0)
-    birds = create_flock(get_canvas_width(), boy)
+    birds = create_flock(get_canvas_width(), boy, grass.label_top)
     for bird in birds:
         game_world.add_oject(bird, 1)
 

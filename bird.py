@@ -71,10 +71,10 @@ class Bird:
         )
 
 
-def create_flock(canvas_width, boy):
+def create_flock(canvas_width, boy, label_top=0):
     """Load one texture for ten birds; translated bounds keep their formation."""
     image = load_image('bird_animation.png')
-    base_y = boy.visual_top + MESSAGE_CLEARANCE + DRAW_HEIGHT / 2
+    base_y = max(boy.visual_top, label_top) + MESSAGE_CLEARANCE + DRAW_HEIGHT / 2
     # Fit the formation if the canvas is narrower than the default 1600px.
     spacing = min(HORIZONTAL_SPACING,
                   max(0, (canvas_width - DRAW_WIDTH) / (FLOCK_COLUMNS - 1)))
