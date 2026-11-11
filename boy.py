@@ -20,6 +20,9 @@ STRIDE_LENGTH_M = 1.8  # 보폭 길이
 RUN_FRAMES_PER_STRIDE = 5 # 1개 보폭에 대한 애니메이션 프레임 수
 
 RUN_FRAMES_PER_SECOND = (RUN_SPEED_MPS / STRIDE_LENGTH_M) * RUN_FRAMES_PER_STRIDE
+BOY_HALF_HEIGHT = 50
+MESSAGE_OFFSET_Y = 50
+MESSAGE_FONT_SIZE = 16
 
 class Idle:
     def enter(self, boy):
@@ -87,7 +90,7 @@ class Run:
 
 class Boy:
     def __init__(self):
-        self.font = load_font('ENCR10B.TTF', 16)
+        self.font = load_font('ENCR10B.TTF', MESSAGE_FONT_SIZE)
         self.x, self.y = 400, 90
         self.frame = 0
         self.image = load_image('animation_sheet.png')
@@ -167,4 +170,11 @@ class Boy:
 
     def draw(self):
         self.states[self.state].draw(self)
-        self.font.draw(self.x - 60, self.y + 50, f'(Time: {get_time():.2f})', (255, 255, 0))
+        self.font.draw(self.x - 60, self.y + MESSAGE_OFFSET_Y,
+                       f'(Time: {get_time():.2f})', (255, 255, 0))
+
+    @property
+    def visual_top(self):
+        """Top of the standing sprite or the centered numeric message."""
+        return self.y + max(BOY_HALF_HEIGHT,
+                            MESSAGE_OFFSET_Y + MESSAGE_FONT_SIZE / 2)
